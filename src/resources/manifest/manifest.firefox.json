@@ -2,7 +2,7 @@
 	"manifest_version": 3,
 	"name": "Surround it!",
 	"short_name": "Surround it",
-	"version": "0.5.0",
+	"version": "0.6.0",
 	"description": "__MSG_description__",
 	"author": "andret2344@gmail.com",
 	"default_locale": "en",

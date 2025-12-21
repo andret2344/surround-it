@@ -1,5 +1,28 @@
 import {BracketPair} from './entity/BracketPair';
 import {getProcessedBracketPair, isTextBox, isEventCorrect} from './guards';
+import {getColumnSettings} from './service/StorageService';
+
+//////////////////////
+// HELPER FUNCTIONS //
+//////////////////////
+
+function isWhitespace(char: string): boolean {
+	return char === ' ' || char === '\t' || char === '\n';
+}
+
+function shouldSkipClosingBracket(eventData: string | null, pair: BracketPair, nextChar: string, isCollapsed: boolean): boolean {
+	return eventData === pair.r && isCollapsed && nextChar === pair.r;
+}
+
+function shouldAllowInsertion(pair: BracketPair, prevChar: string): boolean {
+	if (!pair.activeInsert) {
+		return false;
+	}
+	if (!getColumnSettings().insertEnabled) {
+		return false;
+	}
+	return prevChar === '' || isWhitespace(prevChar);
+}
 
 //////////////////////
 // INPUT & TEXTAREA //
@@ -26,13 +49,33 @@ document.addEventListener('beforeinput', (event: InputEvent): void => {
 		return;
 	}
 
-	event.preventDefault();
+	const isCollapsed: boolean = selectionStart === selectionEnd;
+	const nextChar: string = target.value[selectionStart] || '';
 
-	if (selectionStart === selectionEnd) {
-		insertPairAtCaretInput(target, pair, selectionStart);
-	} else {
-		wrapSelectionWithBracketsInput(target, pair, selectionStart, selectionEnd);
+	// Handle closing bracket skip feature
+	if (shouldSkipClosingBracket(event.data, pair, nextChar, isCollapsed) && pair.activeInsert && getColumnSettings().insertEnabled) {
+		event.preventDefault();
+		target.setSelectionRange(selectionStart + 1, selectionStart + 1);
+		return;
 	}
+
+	// Handle insertion (no selection)
+	if (isCollapsed) {
+		const prevChar: string = selectionStart > 0 ? target.value[selectionStart - 1] : '';
+		if (!shouldAllowInsertion(pair, prevChar)) {
+			return;
+		}
+		event.preventDefault();
+		insertPairAtCaretInput(target, pair, selectionStart);
+		return;
+	}
+
+	// Handle surrounding (with selection)
+	if (!pair.activeSurround || !getColumnSettings().surroundEnabled) {
+		return;
+	}
+	event.preventDefault();
+	wrapSelectionWithBracketsInput(target, pair, selectionStart, selectionEnd);
 });
 
 function insertPairAtCaretInput(element: HTMLInputElement | HTMLTextAreaElement, pair: BracketPair, cursorPosition: number): void {
@@ -63,7 +106,7 @@ document.addEventListener('beforeinput', (event: InputEvent): void => {
 		return;
 	}
 
-	const selection: Selection | null = window.getSelection();
+	const selection: Selection | null = getSelection();
 	if (!selection || selection.rangeCount === 0) {
 		return;
 	}
@@ -78,13 +121,36 @@ document.addEventListener('beforeinput', (event: InputEvent): void => {
 		return;
 	}
 
-	event.preventDefault();
+	const nextChar: string = range.startContainer.textContent?.charAt(range.startOffset) || '';
 
-	if (range.collapsed) {
-		insertPairAtCaret(root, pair.l, pair.r);
-	} else {
-		setSelectedTextForContentEditable(root, pair);
+	// Handle closing bracket skip feature
+	if (shouldSkipClosingBracket(event.data, pair, nextChar, range.collapsed) && pair.activeInsert && getColumnSettings().insertEnabled) {
+		event.preventDefault();
+		const newRange: Range = document.createRange();
+		newRange.setStart(range.startContainer, range.startOffset + 1);
+		newRange.setEnd(range.startContainer, range.startOffset + 1);
+		selection.removeAllRanges();
+		selection.addRange(newRange);
+		return;
 	}
+
+	// Handle insertion (no selection)
+	if (range.collapsed) {
+		const prevChar: string = range.startOffset > 0 ? range.startContainer.textContent?.charAt(range.startOffset - 1) || '' : '';
+		if (!shouldAllowInsertion(pair, prevChar)) {
+			return;
+		}
+		event.preventDefault();
+		insertPairAtCaret(root, pair.l, pair.r);
+		return;
+	}
+
+	// Handle surrounding (with selection)
+	if (!pair.activeSurround || !getColumnSettings().surroundEnabled) {
+		return;
+	}
+	event.preventDefault();
+	setSelectedTextForContentEditable(root, pair);
 });
 
 function getRoot(target: EventTarget | null): HTMLElement | null {
@@ -114,7 +180,7 @@ function getRoot(target: EventTarget | null): HTMLElement | null {
 }
 
 function insertPairAtCaret(root: HTMLElement, l: string, r: string): void {
-	const selection: Selection | null = window.getSelection();
+	const selection: Selection | null = getSelection();
 	if (!selection || selection.rangeCount === 0) {
 		return;
 	}
@@ -138,7 +204,7 @@ function insertPairAtCaret(root: HTMLElement, l: string, r: string): void {
 }
 
 function setSelectedTextForContentEditable(root: HTMLElement, bracketPair: BracketPair): void {
-	const selection: Selection | null = window.getSelection();
+	const selection: Selection | null = getSelection();
 	if (!selection || selection.rangeCount === 0) {
 		return;
 	}

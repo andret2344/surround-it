@@ -12,8 +12,11 @@
 	"example": {
 		"message": "example"
 	},
-	"active": {
-		"message": "active"
+	"insert": {
+		"message": "insert"
+	},
+	"surround": {
+		"message": "surround"
 	},
 	"actions": {
 		"message": "actions"
@@ -25,6 +28,12 @@
 				"content": "$1"
 			}
 		}
+	},
+	"type_left_here": {
+		"message": "Type your left bracket here"
+	},
+	"type_right_here": {
+		"message": "Type your right bracket here"
 	},
 	"brackets": {
 		"message": "brackets"

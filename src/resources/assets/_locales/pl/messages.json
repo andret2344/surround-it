@@ -12,8 +12,11 @@
 	"example": {
 		"message": "przykład"
 	},
-	"active": {
-		"message": "aktywny"
+	"insert": {
+		"message": "wstawianie"
+	},
+	"surround": {
+		"message": "zaznaczenie"
 	},
 	"actions": {
 		"message": "akcje"
@@ -25,6 +28,12 @@
 				"content": "$1"
 			}
 		}
+	},
+	"type_left_here": {
+		"message": "Tu wpisz swój lewy nawias"
+	},
+	"type_right_here": {
+		"message": "Tu wpisz swój prawy nawias"
 	},
 	"brackets": {
 		"message": "nawiasy"

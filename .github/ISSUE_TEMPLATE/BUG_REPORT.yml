@@ -4,14 +4,6 @@ title: "[Bug]: "
 labels: [ bug ]
 projects: [ Andret2344/surround-it ]
 body:
-  - type: input
-    id: contact
-    attributes:
-      label: Contact Details
-      description: How can we get in touch with you if we need more info?
-      placeholder: email@example.com
-    validations:
-      required: false
   - type: textarea
     id: reproduction-steps
     attributes:
@@ -40,7 +32,8 @@ body:
       label: Version
       description: What version of our software are you running?
       options:
-        - v0.5.0 (latest)
+        - v0.6.0 (latest)
+        - v0.5.0
         - v0.4.2
       default: 0
     validations:
@@ -48,11 +41,19 @@ body:
   - type: dropdown
     id: browsers
     attributes:
-      label: What browsers were you sing when the bug happened?
+      label: What browsers were you using when the bug happened?
       options:
         - Chrome
         - Firefox
         - Microsoft Edge
+  - type: input
+    id: url
+    attributes:
+      label: Page details/URL
+      description: What page/url causes the bug?
+      placeholder: https://my.webpage.com/
+    validations:
+      required: false
   - type: textarea
     id: additional-information
     attributes:

@@ -1,4 +1,4 @@
-# Surround It — v0.5.0
+# Surround it! — v0.6.0
 
 ![Release](https://img.shields.io/github/v/release/Andret2344/surround-it)
 ![GitHub Release Date](https://img.shields.io/github/release-date/Andret2344/surround-it)
@@ -18,7 +18,7 @@ Wrap selected text in quotes, backticks, or brackets — just like your favorite
 
 ## Table of Contents
 
-- [Surround It — v0.5.0](#surround-it--v050)
+- [Surround it! — v0.6.0](#surround-it--v060)
     * [Table of Contents](#table-of-contents)
     * [Overview](#overview)
     * [Features](#features)
@@ -32,8 +32,6 @@ Wrap selected text in quotes, backticks, or brackets — just like your favorite
             - [Build](#build)
             - [Test](#test)
     * [Contribution Guidelines](#contribution-guidelines)
-    * [Changelog](#changelog)
-        + [v0.5.0](#v050)
     * [License & Acknowledgments](#license--acknowledgments)
     * [Contact](#contact)
 
@@ -41,7 +39,7 @@ Wrap selected text in quotes, backticks, or brackets — just like your favorite
 
 ## Overview
 
-**Surround it** is a browser extension (Chrome, Firefox, Edge) that replicates one of the most addictive features in modern IDEs: wrapping a selected text with matching quotes,
+**Surround it!** is a browser extension (Chrome, Firefox, Edge) that replicates one of the most addictive features in modern IDEs: wrapping a selected text with matching quotes,
 backticks, or brackets. Automagically and intelligently.
 
 - **Inspired by**: IDEs like VS Code, IntelliJ — makes typing quotes or brackets wrap selected content instead of replacing it.
@@ -60,6 +58,7 @@ backticks, or brackets. Automagically and intelligently.
     - `{ }` (curly braces)
 - **Extensible**: You can customize the wrapping characters due to your liking.
 - **Lightweight** and **minimal permissions**.
+- **Configurable**: Enable or disable all inserting or wrapping behavior.
 
 ---
 
@@ -90,6 +89,7 @@ backticks, or brackets. Automagically and intelligently.
 - Adding custom wrappers in the menu.
 - Enabling or disabling every configured wrapper.
 - Enable or disable the wrapping behavior.
+- Enable or disable all inserting or wrapping behavior.
 
 ---
 
@@ -151,21 +151,6 @@ Please follow:
 * Clear commit messages
 * Consistent formatting (indentation, quotes, etc.)
 * Explain your changes in the PR description
-
----
-
-## Changelog
-
-### v0.5.0
-
-[View release](https://github.com/Andret2344/surround-it/releases/tag/v0.5.0)
-
-Released on: *2025-08-17*
-
-* Fixed not working mechanics, making the extension more reliable.
-
-> [!NOTE]
-> This is the very first release on GitHub.
 
 ---
 

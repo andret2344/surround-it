@@ -26,5 +26,5 @@ export function getProcessedBracketPair(bracket: string | null): BracketPair | n
 	if (!isActive()) {
 		return null;
 	}
-	return getActiveBracketPairs().find((p: BracketPair): boolean => p.l === bracket) || null;
+	return getActiveBracketPairs().find((p: BracketPair): boolean => p.l === bracket || p.r === bracket) || null;
 }

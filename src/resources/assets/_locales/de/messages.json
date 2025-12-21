@@ -12,11 +12,14 @@
 	"example": {
 		"message": "Beispiel"
 	},
-	"active": {
-		"message": "aktiv"
+	"insert": {
+		"message": "Einfügen"
+	},
+	"surround": {
+		"message": "Umgeben"
 	},
 	"actions": {
-		"message": "aktien"
+		"message": "aktionen"
 	},
 	"type_here": {
 		"message": "Gibst du hier deine $brackets$ ein!",
@@ -25,6 +28,12 @@
 				"content": "$1"
 			}
 		}
+	},
+	"type_left_here": {
+		"message": "Geben Sie hier Ihre linke Klammer ein"
+	},
+	"type_right_here": {
+		"message": "Geben Sie hier Ihre rechte Klammer ein."
 	},
 	"brackets": {
 		"message": "Klammern"

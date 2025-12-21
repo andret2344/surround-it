@@ -43,27 +43,27 @@ let brackets: BracketPair[] = [];
 initBrackets().then();
 
 function getActiveBracketPairs(): BracketPair[] {
-	return brackets.filter((p: BracketPair): boolean => p.active);
+	return brackets.filter((p: BracketPair): boolean => p.activeInsert || p.activeSurround);
 }
 
 function getDefaultBracketPairs(): BracketPair[] {
 	return [
-		{l: '(', r: ')', active: true},
-		{l: '{', r: '}', active: true},
-		{l: '<', r: '>', active: true},
-		{l: '[', r: ']', active: true},
-		{l: '\'', r: '\'', active: true},
-		{l: '"', r: '"', active: true},
-		{l: '`', r: '`', active: true},
-		{l: '_', r: '_', active: false},
-		{l: '*', r: '*', active: false},
-		{l: '~', r: '~', active: false},
-		{l: '/', r: '/', active: false},
-		{l: '\\', r: '\\', active: false},
-		{l: '#', r: '#', active: false},
-		{l: '$', r: '$', active: false},
-		{l: '%', r: '%', active: false},
-		{l: '|', r: '|', active: false}
+		{l: '(', r: ')', activeInsert: true, activeSurround: true},
+		{l: '{', r: '}', activeInsert: true, activeSurround: true},
+		{l: '<', r: '>', activeInsert: true, activeSurround: true},
+		{l: '[', r: ']', activeInsert: true, activeSurround: true},
+		{l: '\'', r: '\'', activeInsert: true, activeSurround: true},
+		{l: '"', r: '"', activeInsert: true, activeSurround: true},
+		{l: '`', r: '`', activeInsert: true, activeSurround: true},
+		{l: '_', r: '_', activeInsert: false, activeSurround: true},
+		{l: '*', r: '*', activeInsert: false, activeSurround: true},
+		{l: '~', r: '~', activeInsert: false, activeSurround: true},
+		{l: '/', r: '/', activeInsert: false, activeSurround: true},
+		{l: '\\', r: '\\', activeInsert: false, activeSurround: true},
+		{l: '|', r: '|', activeInsert: false, activeSurround: true},
+		{l: '#', r: '#', activeInsert: false, activeSurround: false},
+		{l: '$', r: '$', activeInsert: false, activeSurround: false},
+		{l: '%', r: '%', activeInsert: false, activeSurround: false}
 	];
 }
 
@@ -93,11 +93,51 @@ browser.storage.onChanged.addListener((changes: Record<string, StorageChange>, a
 	}
 });
 
+//////////////////////
+//  COLUMN SETTINGS  //
+//////////////////////
+
+interface ColumnSettings {
+	insertEnabled: boolean;
+	surroundEnabled: boolean;
+}
+
+let columnSettings: ColumnSettings = {insertEnabled: true, surroundEnabled: true};
+
+initColumnSettings().then();
+
+async function loadColumnSettings(): Promise<ColumnSettings> {
+	const record: Record<string, unknown> = await browser.storage.local.get('columnSettings');
+	return record['columnSettings'] as ColumnSettings ?? {insertEnabled: true, surroundEnabled: true};
+}
+
+async function saveColumnSettings(settings: ColumnSettings): Promise<void> {
+	columnSettings = settings;
+	return await browser.storage.local.set({columnSettings: settings});
+}
+
+async function initColumnSettings(): Promise<void> {
+	columnSettings = await loadColumnSettings();
+}
+
+function getColumnSettings(): ColumnSettings {
+	return columnSettings;
+}
+
+browser.storage.onChanged.addListener((changes: Record<string, StorageChange>, area: string): void => {
+	if (area === 'local' && changes.columnSettings) {
+		columnSettings = changes.columnSettings.newValue as ColumnSettings ?? {insertEnabled: true, surroundEnabled: true};
+	}
+});
+
 export {
 	isActive,
 	setActive,
 	loadActive,
 	saveBracketPairs,
 	getActiveBracketPairs,
-	loadBracketPairs
+	loadBracketPairs,
+	loadColumnSettings,
+	saveColumnSettings,
+	getColumnSettings
 };

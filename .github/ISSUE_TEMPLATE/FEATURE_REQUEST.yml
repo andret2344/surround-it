@@ -4,14 +4,6 @@ title: "[REQUEST]: "
 labels: [ enhancement ]
 projects: [ Andret2344/surround-it ]
 body:
-  - type: input
-    id: contact
-    attributes:
-      label: Contact Details
-      description: How can we get in touch with you if we need more info?
-      placeholder: email@example.com
-    validations:
-      required: false
   - type: textarea
     id: brief-summary
     attributes:

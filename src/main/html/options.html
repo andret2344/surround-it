@@ -16,11 +16,52 @@
 	<table class='table-main'>
 		<thead>
 		<tr>
-			<th data-localizable='left'></th>
-			<th data-localizable='right'></th>
-			<th data-localizable='example'></th>
-			<th data-localizable='active'></th>
-			<th data-localizable='actions'></th>
+			<th
+					data-localizable='left'
+					rowspan='2'
+					scope='col'></th>
+			<th
+					data-localizable='right'
+					rowspan='2'
+					scope='col'></th>
+			<th
+					data-localizable='example'
+					rowspan='2'
+					scope='col'></th>
+			<th
+					data-localizable='insert'
+					scope='col'></th>
+			<th
+					data-localizable='surround'
+					scope='col'></th>
+			<th
+					data-localizable='actions'
+					rowspan='2'
+					scope='col'></th>
+		</tr>
+		<tr>
+			<th scope='col'>
+				<label
+						for='column-insert-enabled'
+						style='display: none'>Insert enabled</label>
+				<input
+						id='column-insert-enabled'
+						type='checkbox'
+						class='column-toggle'
+						data-column='insert'
+				/>
+			</th>
+			<th scope='col'>
+				<label
+						for='column-surround-enabled'
+						style='display: none'>Surround enabled</label>
+				<input
+						id='column-surround-enabled'
+						type='checkbox'
+						class='column-toggle'
+						data-column='surround'
+				/>
+			</th>
 		</tr>
 		</thead>
 		<tbody id='tbody'>
@@ -37,7 +78,9 @@
 		<tbody>
 		<tr>
 			<td>
-				<label for='add-input-l'>Type in left bracket</label>
+				<label
+						for='add-input-l'
+						data-localizable='type_left_here'>x</label>
 				<input
 						id='add-input-l'
 						size='2'
@@ -47,7 +90,9 @@
 				/>
 			</td>
 			<td>
-				<label for='add-input-r'>Type in right bracket</label>
+				<label
+						for='add-input-r'
+						data-localizable='type_right_here'>x</label>
 				<input
 						id='add-input-r'
 						size='2'

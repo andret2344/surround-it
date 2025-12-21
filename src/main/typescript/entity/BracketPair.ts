@@ -1,5 +1,8 @@
 export interface BracketPair {
 	readonly l: string;
 	readonly r: string;
-	readonly active: boolean;
+	/** @deprecated */
+	readonly active?: boolean;
+	readonly activeInsert: boolean;
+	readonly activeSurround: boolean;
 }
