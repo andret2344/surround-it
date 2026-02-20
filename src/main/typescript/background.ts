@@ -14,14 +14,14 @@ function shouldSkipClosingBracket(eventData: string | null, pair: BracketPair, n
 	return eventData === pair.r && isCollapsed && nextChar === pair.r;
 }
 
-function shouldAllowInsertion(pair: BracketPair, prevChar: string): boolean {
+function shouldAllowInsertion(pair: BracketPair, prevChar: string, nextChar: string): boolean {
 	if (!pair.activeInsert) {
 		return false;
 	}
 	if (!getColumnSettings().insertEnabled) {
 		return false;
 	}
-	return prevChar === '' || isWhitespace(prevChar);
+	return (prevChar === '' || isWhitespace(prevChar)) && (nextChar === '' || isWhitespace(nextChar));
 }
 
 //////////////////////
@@ -62,7 +62,7 @@ document.addEventListener('beforeinput', (event: InputEvent): void => {
 	// Handle insertion (no selection)
 	if (isCollapsed) {
 		const prevChar: string = selectionStart > 0 ? target.value[selectionStart - 1] : '';
-		if (!shouldAllowInsertion(pair, prevChar)) {
+		if (!shouldAllowInsertion(pair, prevChar, nextChar)) {
 			return;
 		}
 		event.preventDefault();
@@ -137,7 +137,7 @@ document.addEventListener('beforeinput', (event: InputEvent): void => {
 	// Handle insertion (no selection)
 	if (range.collapsed) {
 		const prevChar: string = range.startOffset > 0 ? range.startContainer.textContent?.charAt(range.startOffset - 1) || '' : '';
-		if (!shouldAllowInsertion(pair, prevChar)) {
+		if (!shouldAllowInsertion(pair, prevChar, nextChar)) {
 			return;
 		}
 		event.preventDefault();
