@@ -12,15 +12,15 @@ jobs:
     name: Install, typecheck & build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup Node LTS
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 'lts/*'
 
       - name: Restore Yarn & node_modules cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cache/yarn
@@ -40,76 +40,62 @@ jobs:
       - name: Build firefox
         run: yarn build:firefox
 
+      - name: Upload chromium build
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v7
+        with:
+          name: dist-chromium
+          path: dist/chromium
+          retention-days: 1
+
+      - name: Upload firefox build
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v7
+        with:
+          name: dist-firefox
+          path: dist/firefox
+          retention-days: 1
+
   build_chromium:
-    name: Build & Pack (chromium)
+    name: Pack (chromium)
     needs: deps
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
+      - name: Download chromium build
+        uses: actions/download-artifact@v8
         with:
-          node-version: 'lts/*'
-
-      - name: Restore Yarn & node_modules cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/yarn
-            node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: ${{ runner.os }}-yarn-
-
-      - name: Install zip
-        run: sudo apt-get update && sudo apt-get install -y zip
-
-      - name: Build chromium
-        run: yarn run build:chromium
+          name: dist-chromium
+          path: dist/chromium
 
       - name: Zip chromium
         working-directory: dist/chromium
         run: zip -r ../surround-it-chromium.zip .
 
       - name: Upload chromium ZIP
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: surround-it-chromium
           path: dist/surround-it-chromium.zip
 
   build_firefox:
-    name: Build & Pack (firefox)
+    name: Pack (firefox)
     needs: deps
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
+      - name: Download firefox build
+        uses: actions/download-artifact@v8
         with:
-          node-version: 'lts/*'
-
-      - name: Restore Yarn & node_modules cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/yarn
-            node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: ${{ runner.os }}-yarn-
-
-      - name: Install zip
-        run: sudo apt-get update && sudo apt-get install -y zip
-
-      - name: Build firefox
-        run: yarn run build:firefox
+          name: dist-firefox
+          path: dist/firefox
 
       - name: Zip firefox
         working-directory: dist/firefox
         run: zip -r ../surround-it-firefox.zip .
 
       - name: Upload firefox ZIP
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: surround-it-firefox
           path: dist/surround-it-firefox.zip
@@ -123,14 +109,14 @@ jobs:
       contents: write
     steps:
       - name: Download both ZIPs
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: surround-it-*
           merge-multiple: true
           path: dist
 
       - name: Create Release and attach ZIPs
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: Release ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
