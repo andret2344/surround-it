@@ -5,11 +5,18 @@ import browser from 'webextension-polyfill';
 const powerButton: Element | null = document.querySelector('.power-button');
 if (powerButton) {
 	loadActive().then((active: boolean): void => {
-		powerButton.classList.toggle('active', active);
+		let current: boolean = active;
+		powerButton.classList.toggle('active', current);
 
-		powerButton.addEventListener('click', (): void =>
-			setActive(!active, (): boolean => powerButton.classList.toggle('active', !active)));
+		powerButton.addEventListener('click', (): void => {
+			current = !current;
+			setActive(current, (): boolean => powerButton.classList.toggle('active', current));
+		});
 	})
 }
 
-document.querySelector('#options-button')?.addEventListener('click', (): Promise<void> => browser.runtime.openOptionsPage());
+const optionsButton: Element | null = document.querySelector('#options-button');
+if (optionsButton) {
+	optionsButton.textContent = browser.i18n.getMessage('options');
+	optionsButton.addEventListener('click', (): Promise<void> => browser.runtime.openOptionsPage());
+}

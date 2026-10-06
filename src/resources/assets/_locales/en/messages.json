@@ -40,5 +40,20 @@
 	},
 	"add": {
 		"message": "add"
+	},
+	"options": {
+		"message": "Options"
+	},
+	"error_empty": {
+		"message": "Cannot be empty!"
+	},
+	"error_collision": {
+		"message": "This character is already used by another pair!"
+	},
+	"restore_defaults": {
+		"message": "Restore defaults"
+	},
+	"restore_defaults_confirm": {
+		"message": "Restore the default brackets and settings? Your custom brackets will be removed."
 	}
 }

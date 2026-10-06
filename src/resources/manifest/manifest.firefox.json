@@ -2,7 +2,7 @@
 	"manifest_version": 3,
 	"name": "Surround it!",
 	"short_name": "Surround it",
-	"version": "0.6.0",
+	"version": "0.7.0",
 	"description": "__MSG_description__",
 	"author": "andret2344@gmail.com",
 	"default_locale": "en",
@@ -13,17 +13,16 @@
 	"permissions": [
 		"storage"
 	],
-	"host_permissions": [
-		"*://*/*"
-	],
 	"content_scripts": [
 		{
 			"matches": [
 				"*://*/*"
 			],
 			"js": [
-				"background.js"
-			]
+				"content.js"
+			],
+			"all_frames": true,
+			"match_about_blank": true
 		}
 	],
 	"icons": {

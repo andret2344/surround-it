@@ -1,4 +1,8 @@
-# Surround it! — v0.6.0
+<p align="center">
+	<img src=".github/assets/surround-it.png" width="128" alt="Surround it! logo">
+</p>
+
+# Surround it! — v0.7.0
 
 ![Release](https://img.shields.io/github/v/release/Andret2344/surround-it)
 ![GitHub Release Date](https://img.shields.io/github/release-date/Andret2344/surround-it)
@@ -18,7 +22,7 @@ Wrap selected text in quotes, backticks, or brackets — just like your favorite
 
 ## Table of Contents
 
-- [Surround it! — v0.6.0](#surround-it--v060)
+- [Surround it! — v0.7.0](#surround-it--v070)
     * [Table of Contents](#table-of-contents)
     * [Overview](#overview)
     * [Features](#features)
@@ -80,6 +84,7 @@ backticks, or brackets. Automagically and intelligently.
 4. **Result**: Text is automatically wrapped: `"selected text"`
 5. **Edge cases**:
     - **No selection**: Insert an empty pair and place the cursor between.
+    - **Backspace inside an empty pair**: Remove both characters.
     - **Text already wrapped**: Wrap again.
 
 ---
@@ -156,8 +161,7 @@ Please follow:
 
 ## License & Acknowledgments
 
-* © 2025 **Andret2344**
-* License: **CC BY-SA 4.0**
+* License: **Apache License 2.0**, see [LICENSE.txt](LICENSE.txt) and [NOTICE](NOTICE)
 * Inspired by behavior in popular IDEs like IntelliJ IDEA.
 
 ---

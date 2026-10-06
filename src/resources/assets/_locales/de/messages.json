@@ -40,5 +40,20 @@
 	},
 	"add": {
 		"message": "hinzufügen"
+	},
+	"options": {
+		"message": "Optionen"
+	},
+	"error_empty": {
+		"message": "Darf nicht leer sein!"
+	},
+	"error_collision": {
+		"message": "Dieses Zeichen wird bereits von einem anderen Paar verwendet!"
+	},
+	"restore_defaults": {
+		"message": "Standard wiederherstellen"
+	},
+	"restore_defaults_confirm": {
+		"message": "Standardklammern und -einstellungen wiederherstellen? Ihre eigenen Klammern werden entfernt."
 	}
 }

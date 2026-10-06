@@ -5,9 +5,12 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
 	mode: 'production',
 	entry: {
-		background: path.resolve(__dirname, '..', '..', 'main', 'typescript', 'background.ts'),
+		content: path.resolve(__dirname, '..', '..', 'main', 'typescript', 'content.ts'),
 		popup: path.resolve(__dirname, '..', '..', 'main', 'typescript', 'popup.ts'),
 		options: path.resolve(__dirname, '..', '..', 'main', 'typescript', 'options.ts')
+	},
+	output: {
+		clean: true
 	},
 	resolve: {
 		extensions: ['.ts', '.js']
@@ -34,7 +37,8 @@ module.exports = {
 			patterns: [
 				{from: 'src/resources/assets/icons', to: 'icons'},
 				{from: 'src/resources/assets/_locales', to: '_locales'},
-				{from: require.resolve('webextension-polyfill'), to: 'webextension-polyfill.js'}
+				{from: 'LICENSE.txt'},
+				{from: 'NOTICE'}
 			]
 		}),
 		new HtmlWebpackPlugin({
