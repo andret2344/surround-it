@@ -9,7 +9,7 @@ on:
 
 jobs:
   deps:
-    name: Install deps
+    name: Install, typecheck & build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,6 +30,15 @@ jobs:
 
       - name: Install
         run: yarn install --frozen-lockfile
+
+      - name: Typecheck
+        run: yarn typecheck
+
+      - name: Build chromium
+        run: yarn build:chromium
+
+      - name: Build firefox
+        run: yarn build:firefox
 
   build_chromium:
     name: Build & Pack (chromium)

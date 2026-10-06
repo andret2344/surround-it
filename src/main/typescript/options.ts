@@ -1,12 +1,22 @@
 import '../scss/options.scss';
-import '@fortawesome/fontawesome-free/js/fontawesome';
-import '@fortawesome/fontawesome-free/js/solid';
 import {BracketPair} from './entity/BracketPair';
-import {loadBracketPairs, saveBracketPairs, loadColumnSettings, saveColumnSettings} from './service/StorageService';
+import {
+	ColumnSettings,
+	loadBracketPairs,
+	saveBracketPairs,
+	loadColumnSettings,
+	saveColumnSettings,
+	getDefaultBracketPairs,
+	getDefaultColumnSettings
+} from './service/StorageService';
 import browser from 'webextension-polyfill';
+
+// Font Awesome Free 7.1.0 trash icon, https://fontawesome.com/license/free (CC BY 4.0)
+const TRASH_ICON: string = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 -16 448 528' aria-hidden='true'><path fill='currentColor' d='M136.7 5.9L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-8.7-26.1C306.9-7.2 294.7-16 280.9-16L167.1-16c-13.8 0-26 8.8-30.4 21.9zM416 144L32 144 53.1 467.1C54.7 492.4 75.7 512 101 512L347 512c25.3 0 46.3-19.6 47.9-44.9L416 144z'/></svg>`;
 
 const tbodyElement: HTMLElement = document.getElementById('tbody') as HTMLElement;
 const currentBrackets: BracketPair[] = [];
+let rowCounter: number = 0;
 
 insertCustomText();
 
@@ -60,6 +70,7 @@ document.querySelectorAll('.add-input').forEach((el: Element): void =>
 	el.addEventListener('input', (): void => {
 		const bracketL: string = (document.querySelector('.add-l') as HTMLInputElement).value;
 		const bracketR: string = (document.querySelector('.add-r') as HTMLInputElement).value;
+		(el as HTMLInputElement).setCustomValidity('');
 		const text: Text = document.createTextNode(`${bracketL}xyz${bracketR}`);
 		const addResult: Element | null = document.querySelector('.add-result');
 		addResult?.firstChild?.remove();
@@ -97,25 +108,34 @@ function updateColumnState(column: string, enabled: boolean): void {
 	});
 }
 
+// A character may belong to one pair only; otherwise typing it would be ambiguous.
+function isCharacterUsed(char: string): boolean {
+	return currentBrackets.some((value: BracketPair): boolean => value.l === char || value.r === char);
+}
+
 document.querySelector('.add-submit')?.addEventListener('click', (): void => {
 	const addLElement: HTMLInputElement | null = document.querySelector('.add-l') as HTMLInputElement;
 	const addRElement: HTMLInputElement | null = document.querySelector('.add-r') as HTMLInputElement;
 	const bracketL: string = addLElement.value;
 	const bracketR: string = addRElement.value;
 	if (!bracketL) {
-		addLElement.setCustomValidity('Cannot be empty!');
+		addLElement.setCustomValidity(browser.i18n.getMessage('error_empty'));
 		addLElement.reportValidity();
 		return;
 	}
 	if (!bracketR) {
-		addRElement.setCustomValidity('Cannot be empty!');
+		addRElement.setCustomValidity(browser.i18n.getMessage('error_empty'));
 		addRElement.reportValidity();
 		return;
 	}
-	const foundL = currentBrackets.find(value => value.l === bracketL);
-	if (foundL) {
-		addLElement.setCustomValidity('Such a left bracket is already defined!');
+	if (isCharacterUsed(bracketL)) {
+		addLElement.setCustomValidity(browser.i18n.getMessage('error_collision'));
 		addLElement.reportValidity();
+		return;
+	}
+	if (isCharacterUsed(bracketR)) {
+		addRElement.setCustomValidity(browser.i18n.getMessage('error_collision'));
+		addRElement.reportValidity();
 		return;
 	}
 
@@ -125,7 +145,7 @@ document.querySelector('.add-submit')?.addEventListener('click', (): void => {
 		activeInsert: true,
 		activeSurround: true
 	};
-	addElement(bracketPair, currentBrackets.length);
+	addElement(bracketPair);
 	saveBracketPairs(currentBrackets).then((): void => {
 		addLElement.value = '';
 		addRElement.value = '';
@@ -133,24 +153,45 @@ document.querySelector('.add-submit')?.addEventListener('click', (): void => {
 	});
 });
 
+document.querySelector('.restore-defaults')?.addEventListener('click', (): void => {
+	if (!confirm(browser.i18n.getMessage('restore_defaults_confirm'))) {
+		return;
+	}
+	const bracketPairs: BracketPair[] = getDefaultBracketPairs();
+	const settings: ColumnSettings = getDefaultColumnSettings();
+	Promise.all([saveBracketPairs(bracketPairs), saveColumnSettings(settings)])
+		.then((): void => renderOptions(bracketPairs, settings));
+});
+
 function restoreOptions(): void {
-	loadBracketPairs().then((bracketPairs: BracketPair[]): void => bracketPairs.forEach(addElement));
-	loadColumnSettings().then((settings): void => {
-		const insertCheckbox = document.getElementById('column-insert-enabled') as HTMLInputElement;
-		const surroundCheckbox = document.getElementById('column-surround-enabled') as HTMLInputElement;
-		if (insertCheckbox) {
-			insertCheckbox.checked = settings.insertEnabled;
-			updateColumnState('insert', settings.insertEnabled);
-		}
-		if (surroundCheckbox) {
-			surroundCheckbox.checked = settings.surroundEnabled;
-			updateColumnState('surround', settings.surroundEnabled);
-		}
-	});
+	Promise.all([loadBracketPairs(), loadColumnSettings()])
+		.then(([bracketPairs, settings]): void => renderOptions(bracketPairs, settings));
 }
 
-function addElement(bracketPair: BracketPair, index: number): void {
+function renderOptions(bracketPairs: BracketPair[], settings: ColumnSettings): void {
+	currentBrackets.length = 0;
+	tbodyElement.replaceChildren();
+	bracketPairs.forEach(addElement);
+
+	const insertCheckbox = document.getElementById('column-insert-enabled') as HTMLInputElement;
+	const surroundCheckbox = document.getElementById('column-surround-enabled') as HTMLInputElement;
+	if (insertCheckbox) {
+		insertCheckbox.checked = settings.insertEnabled;
+		updateColumnState('insert', settings.insertEnabled);
+	}
+	if (surroundCheckbox) {
+		surroundCheckbox.checked = settings.surroundEnabled;
+		updateColumnState('surround', settings.surroundEnabled);
+	}
+}
+
+function isColumnEnabled(id: string): boolean {
+	return (document.getElementById(id) as HTMLInputElement | null)?.checked ?? true;
+}
+
+function addElement(bracketPair: BracketPair): void {
 	currentBrackets.push(bracketPair);
+	const rowId: number = rowCounter++;
 	const escapedL: string = escapeHTML(bracketPair.l);
 	const escapedR: string = escapeHTML(bracketPair.r);
 
@@ -166,27 +207,29 @@ function addElement(bracketPair: BracketPair, index: number): void {
             	<pre class='text-center'>${escapedL}xyz${escapedR}</pre>
             </td>
             <td class='text-center'>
-            	<label for='active-insert-${index}' style='display: none;'>${escapedL}${escapedR}</label>
-            	<input 
-            			id='active-insert-${index}'
+            	<label for='active-insert-${rowId}' style='display: none;'>${escapedL}${escapedR}</label>
+            	<input
+            			id='active-insert-${rowId}'
             			type='checkbox'
             			data-bracket='${escapedL}'
             			class='bracket-active-insert'
-						${(bracketPair.activeInsert ?? false) && 'checked'}
+						${bracketPair.activeInsert ? 'checked' : ''}
+						${isColumnEnabled('column-insert-enabled') ? '' : 'disabled'}
 				/>
 			</td>
 			<td class='text-center'>
-				<label for='active-surround-${index}' style='display: none;'>${escapedL}${escapedR}</label>
-            	<input 
-            			id='active-surround-${index}'
+				<label for='active-surround-${rowId}' style='display: none;'>${escapedL}${escapedR}</label>
+            	<input
+            			id='active-surround-${rowId}'
             			type='checkbox'
             			data-bracket='${escapedL}'
             			class='bracket-active-surround'
-						${(bracketPair.activeSurround ?? false) && 'checked'}
+						${bracketPair.activeSurround ? 'checked' : ''}
+						${isColumnEnabled('column-surround-enabled') ? '' : 'disabled'}
 				/>
             </td>
             <td class='text-center'>
-            	<span class='icon-container' data-bracket='${escapedL}'><i class='fa-solid fa-trash'></i></span>
+            	<span class='icon-container' data-bracket='${escapedL}'>${TRASH_ICON}</span>
 			</td>
         </tr>`;
 	tbodyElement.insertAdjacentHTML('beforeend', html);

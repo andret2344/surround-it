@@ -40,5 +40,20 @@
 	},
 	"add": {
 		"message": "dodaj"
+	},
+	"options": {
+		"message": "Opcje"
+	},
+	"error_empty": {
+		"message": "Nie może być puste!"
+	},
+	"error_collision": {
+		"message": "Ten znak jest już używany przez inną parę!"
+	},
+	"restore_defaults": {
+		"message": "Przywróć domyślne"
+	},
+	"restore_defaults_confirm": {
+		"message": "Przywrócić domyślne nawiasy i ustawienia? Twoje własne nawiasy zostaną usunięte."
 	}
 }

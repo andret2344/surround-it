@@ -1,14 +1,15 @@
 {
 	"name": "surround-it",
-	"version": "0.6.0",
+	"version": "0.7.0",
 	"description": "Simply wrap text in any brackets or parentheses.",
-	"license": "CC-BY-SA-4.0",
+	"license": "Apache-2.0",
 	"private": true,
 	"packageManager": "yarn@1.22.22",
 	"browserslist": [
 		"defaults"
 	],
 	"scripts": {
+		"typecheck": "tsc --noEmit",
 		"build:chromium": "webpack --config src/resources/webpack/webpack.chromium.js",
 		"watch:chromium": "webpack --config src/resources/webpack/webpack.chromium.js --watch --devtool inline-source-map --mode development",
 		"build:firefox": "webpack --config src/resources/webpack/webpack.firefox.js",
@@ -23,8 +24,7 @@
 		"email": "andret2344@gmail.com",
 		"url": "https://github.com/Andret2344/surround-it/issues"
 	},
-	"dependencies": {
-		"@fortawesome/fontawesome-free": "^7.1.0",
+	"devDependencies": {
 		"@types/webextension-polyfill": "^0.12.4",
 		"copy-webpack-plugin": "^13.0.1",
 		"css-loader": "^7.1.2",

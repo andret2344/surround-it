@@ -35,6 +35,11 @@ body {
 
 	.icon-container {
 		cursor: pointer;
+
+		svg {
+			width: 1em;
+			height: 1em;
+		}
 	}
 
 	header {
@@ -141,6 +146,25 @@ body {
 				&:hover {
 					background-color: $white;
 				}
+			}
+		}
+
+		.restore-defaults {
+			margin: 1em 0;
+			padding: 0.5em 1em;
+			font-size: 1.6rem;
+			text-transform: uppercase;
+			font-weight: 600;
+			border: 2px solid $blue;
+			color: $blue;
+			background-color: transparent;
+			border-radius: 8px;
+			cursor: pointer;
+			transition: 0.3s;
+
+			&:hover {
+				color: $dark;
+				background-color: $blue;
 			}
 		}
 	}

@@ -16,18 +16,12 @@ function isActive(): boolean {
 
 async function loadActive(): Promise<boolean> {
 	const record: Record<string, unknown> = await browser.storage.local.get('active');
-	return record['active'] as boolean ?? false;
+	return record['active'] as boolean ?? true;
 }
 
 async function initActive(): Promise<void> {
 	featureActive = await loadActive();
 }
-
-browser.storage.onChanged.addListener((changes: Record<string, StorageChange>, area: string): void => {
-	if (area === 'local' && changes.active) {
-		featureActive = changes.active.newValue !== false;
-	}
-});
 
 function setActive(active: boolean, callback: (() => void) | undefined = undefined): void {
 	featureActive = active;
@@ -89,7 +83,7 @@ browser.storage.onChanged.addListener((changes: Record<string, StorageChange>, a
 		brackets = newValue ?? getDefaultBracketPairs();
 	}
 	if (changes.active) {
-		featureActive = changes.active.newValue as boolean;
+		featureActive = changes.active.newValue !== false;
 	}
 });
 
@@ -97,18 +91,22 @@ browser.storage.onChanged.addListener((changes: Record<string, StorageChange>, a
 //  COLUMN SETTINGS  //
 //////////////////////
 
-interface ColumnSettings {
+export interface ColumnSettings {
 	insertEnabled: boolean;
 	surroundEnabled: boolean;
 }
 
-let columnSettings: ColumnSettings = {insertEnabled: true, surroundEnabled: true};
+function getDefaultColumnSettings(): ColumnSettings {
+	return {insertEnabled: true, surroundEnabled: true};
+}
+
+let columnSettings: ColumnSettings = getDefaultColumnSettings();
 
 initColumnSettings().then();
 
 async function loadColumnSettings(): Promise<ColumnSettings> {
 	const record: Record<string, unknown> = await browser.storage.local.get('columnSettings');
-	return record['columnSettings'] as ColumnSettings ?? {insertEnabled: true, surroundEnabled: true};
+	return record['columnSettings'] as ColumnSettings ?? getDefaultColumnSettings();
 }
 
 async function saveColumnSettings(settings: ColumnSettings): Promise<void> {
@@ -126,7 +124,7 @@ function getColumnSettings(): ColumnSettings {
 
 browser.storage.onChanged.addListener((changes: Record<string, StorageChange>, area: string): void => {
 	if (area === 'local' && changes.columnSettings) {
-		columnSettings = changes.columnSettings.newValue as ColumnSettings ?? {insertEnabled: true, surroundEnabled: true};
+		columnSettings = changes.columnSettings.newValue as ColumnSettings ?? getDefaultColumnSettings();
 	}
 });
 
@@ -136,8 +134,10 @@ export {
 	loadActive,
 	saveBracketPairs,
 	getActiveBracketPairs,
+	getDefaultBracketPairs,
 	loadBracketPairs,
 	loadColumnSettings,
 	saveColumnSettings,
-	getColumnSettings
+	getColumnSettings,
+	getDefaultColumnSettings
 };
